@@ -4,8 +4,8 @@ from flask import Flask, render_template, request, abort, Response, redirect
 
 import db
 import cities
-from roster import Person, Facts, Event, Site
-from forms import EventForm
+from roster import Person, Facts, Event, Site, Task
+from forms import EventForm, TaskForm
 from utils import safe_float, safe_int
 
 app = Flask(__name__)
@@ -103,7 +103,17 @@ def update_event(id):
     else:
         return render_template('events/edit.html', event=event, form=form)
 
-###
+@app.route('/tasks')
+def tasks():
+    model = Task()
+    form = TaskForm()
+    form.populate_obj(model)
+    return render_template('tasks/index.html', tasks=[model], form=form)
+
+@app.route('/tasks/save')
+def save_task():
+    raise NotImplementedError()
+    return render_template('tasks/index.html', tasks=[], form=form)
 
 def create_dbs():
     cities.create_db()

@@ -1,11 +1,40 @@
 {% extends 'layout.html' %}
-
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/typeaheadjs.css') }}">
 {% endblock %}
 
+{% macro with_errors(field) %}
+    <div class='form-group {{ 'has-error' if field.errors }}'>
+      {{ field.label(class='control-label') }}
+      {% set css_class = 'form-control' + kwargs.pop('class', '') %}
+      {{ field(class=css_class, **kwargs) }}
+      {% if field.errors %}
+          <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
+      {% endif %}
+    </div>
+{% endmacro %}
+
 {% block content %}
   <h1>Task Manager</h1>
+
+{% if form.errors %}
+  <div class="alert alert-danger" role="alert">
+    <h4>Whoops!</h4>
+    We found some errors in your input. Please check below.
+  </div>
+{% endif %}
+
+<form method="POST" action={{ url_for('tasks') }}>
+  {{ form.csrf_token }}
+  {{ with_errors(form.event_id) }}
+  {{ with_errors(form.person_id) }}
+  {{ with_errors(form.role) }}
+
+  <div class='actions'>
+    <input class="btn btn-primary" name="commit" type="submit" value="Save" />
+  </div>
+</form>
+
 {% endblock %}
 
 {% block scripts %}
